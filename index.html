@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" /> <!-- Placeholder icon -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nossa História de Amor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* You can add very minimal global styles here if necessary, e.g., for a specific romantic font */
+    /* For simplicity, we'll rely mostly on Tailwind's font utilities */
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif; /* A slightly more romantic default */
+    }
+    /* Custom scrollbar for a softer look - webkit only */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f130; /* Softer track */
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #c1c1c180; /* Softer thumb */
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #a1a1a1; 
+    }
+
+    @keyframes gentle-fade-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-gentle-fade-in {
+      animation: gentle-fade-in 0.8s ease-out forwards;
+    }
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.1.0",
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.6.1",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
