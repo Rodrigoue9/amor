@@ -6,7 +6,7 @@ import { AppContextType, Photo, SiteContent, ThemeColors, simpleHash, LoveLetter
 import { DEFAULT_THEME, INITIAL_ADMIN_PASSWORD, DEFAULT_QUOTES } from '../constants';
 
 // ---- ADICIONE A URL DA SUA API AQUI ----
-const API_URL = 'https://amorronaldo.infinityfreeapp.com/?i=1'; // Altere se o caminho do seu projeto PHP for diferente
+const API_URL = 'https://amorronaldo.infinityfreeapp.com/api.php'; // Altere se o caminho do seu projeto PHP for diferente
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
