@@ -5,6 +5,14 @@ export interface Photo {
   caption?: string;
 }
 
+export interface LoveLetter {
+  id: string;
+  title: string;
+  content: string;
+  date: string; // ISO string for date (e.g., YYYY-MM-DD)
+  author?: string;
+}
+
 export interface ThemeColors {
   background: string;        // e.g., 'bg-rose-50'
   text: string;              // e.g., 'text-rose-700'
@@ -22,22 +30,28 @@ export interface ThemeColors {
 export interface SiteContent {
   photos: Photo[];
   quotes: [string, string];
+  loveLetters: LoveLetter[];
 }
 
 export interface AppContextType {
   isAuthenticated: boolean;
-  login: (password: string) => Promise<boolean>; // Changed to Promise<boolean>
+  login: (password: string) => Promise<boolean>;
   logout: () => void;
   theme: ThemeColors;
   setTheme: (newTheme: Partial<ThemeColors>) => void;
   content: SiteContent;
-  addPhoto: (photoData: Omit<Photo, 'id'>) => void;
+  addPhoto: (file: File, caption?: string) => Promise<void>; // Updated signature
   removePhoto: (photoId: string) => void;
-  updatePhoto: (photoId: string, newUrl: string, newCaption?: string) => void;
+  updatePhoto: (photoId: string, data: { file?: File; caption?: string }) => Promise<void>; // Updated signature
   updateQuote: (index: 0 | 1, text: string) => void;
-  adminPasswordHash: string; // Store hash, not plain password
-  changeAdminPassword: (newPassword: string) => Promise<boolean>; // Changed to Promise<boolean>
-  isLoading: boolean; // For async operations like password change
+  addLoveLetter: (letterData: Omit<LoveLetter, 'id'>) => void;
+  updateLoveLetter: (letterId: string, letterData: Partial<Omit<LoveLetter, 'id'>>) => void;
+  removeLoveLetter: (letterId: string) => void;
+  adminPasswordHash: string; 
+  changeAdminPassword: (newPassword: string) => Promise<boolean>;
+  isLoading: boolean;
+  storageError: string | null;
+  clearStorageError: () => void;
 }
 
 // Simple hashing function (for demonstration, use a robust library in production)

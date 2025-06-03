@@ -1,7 +1,8 @@
+
 import React, { useState, FormEvent, ChangeEvent, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; // Import Link for Home button
+import { useNavigate, Link } from 'react-router-dom'; 
 import { useAppContext } from '../contexts/AppContext';
-import { Photo, ThemeColors } from '../types';
+import { Photo, ThemeColors, LoveLetter } from '../types';
 import { THEME_COLOR_OPTIONS, DEFAULT_THEME, THEME_PROPERTY_TRANSLATIONS } from '../constants';
 
 // Helper Icons (embedding for brevity)
@@ -14,9 +15,13 @@ const PaintBrushIcon = ({ className }: {className?: string}) => <svg xmlns="http
 const TrashIcon = ({ className }: { className?: string }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-5 h-5 ${className}`}><path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12.56 0c1.153 0 2.24.03 3.22.078l7.223 7.223M3.328 5.778c.099-.058.2-.112.303-.162m2.004 0A23.977 23.977 0 0 1 12 5.5c4.634 0 8.939.814 12.672 2.278m0 0a3.242 3.242 0 0 1-.306.162M5.33 5.616a23.977 23.977 0 0 0-2.004 0M18 9h-6" /></svg>;
 const ArrowUpTrayIcon = ({ className }: { className?: string }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-5 h-5 ${className}`}><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>;
 const HomeIcon = ({ className }: { className?: string }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-5 h-5 ${className}`}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h7.5" /></svg>;
+const EnvelopeIcon = ({ className }: { className?: string }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-5 h-5 ${className || ''}`}><path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg>;
+const PlusCircleIcon = ({ className }: { className?: string }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-5 h-5 ${className || ''}`}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>;
+const PencilIcon = ({ className }: { className?: string }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-5 h-5 ${className || ''}`}><path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" /></svg>;
+const ExclamationTriangleIcon = ({className}: {className?: string}) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-6 h-6 ${className}`}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>;
 
 
-type AdminSection = 'dashboard' | 'theme' | 'photos' | 'quotes' | 'password';
+type AdminSection = 'dashboard' | 'theme' | 'photos' | 'quotes' | 'loveLetters' | 'password';
 
 const AdminPanel: React.FC = () => {
   const {
@@ -30,8 +35,13 @@ const AdminPanel: React.FC = () => {
     removePhoto,
     updatePhoto,
     updateQuote,
+    addLoveLetter,
+    updateLoveLetter,
+    removeLoveLetter,
     changeAdminPassword,
-    isLoading
+    isLoading,
+    storageError,
+    clearStorageError,
   } = useAppContext();
 
   const navigate = useNavigate();
@@ -39,21 +49,32 @@ const AdminPanel: React.FC = () => {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [currentSection, setCurrentSection] = useState<AdminSection>('dashboard');
+  const [isReadingFile, setIsReadingFile] = useState(false);
 
-  // States for forms
-  const [newPhotoFile, setNewPhotoFile] = useState<File | null>(null);
-  const [newPhotoPreview, setNewPhotoPreview] = useState<string | null>(null);
+
+  // States for Photo forms
+  const [newPhotoFile, setNewPhotoFile] = useState<File | null>(null); // Store the File object
+  const [newPhotoPreview, setNewPhotoPreview] = useState<string | null>(null); // For local preview only
   const [newPhotoCaption, setNewPhotoCaption] = useState('');
   const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
 
+  // States for Quote forms
   const [quote1, setQuote1] = useState(content.quotes[0]);
   const [quote2, setQuote2] = useState(content.quotes[1]);
 
+  // States for Love Letter forms
+  const [editingLetter, setEditingLetter] = useState<LoveLetter | null>(null);
+  const [letterTitle, setLetterTitle] = useState('');
+  const [letterContent, setLetterContent] = useState('');
+  const [letterDate, setLetterDate] = useState(new Date().toISOString().split('T')[0]); 
+  const [letterAuthor, setLetterAuthor] = useState('');
+
+
+  // States for Password form
   const [newAdminPassword, setNewAdminPassword] = useState('');
   const [confirmNewAdminPassword, setConfirmNewAdminPassword] = useState('');
 
 
-  // Sync quotes from context
   useEffect(() => {
     setQuote1(content.quotes[0]);
     setQuote2(content.quotes[1]);
@@ -64,22 +85,51 @@ const AdminPanel: React.FC = () => {
     setNewPhotoPreview(null);
     setNewPhotoCaption('');
     setEditingPhoto(null);
+    const photoFileInput = document.getElementById('photoFile') as HTMLInputElement;
+    if (photoFileInput) photoFileInput.value = ''; 
+  };
+  
+  const resetLetterForm = () => {
+    setEditingLetter(null);
+    setLetterTitle('');
+    setLetterContent('');
+    setLetterDate(new Date().toISOString().split('T')[0]);
+    setLetterAuthor('');
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setNewPhotoFile(file);
+       // Basic client-side size check, actual limits would be on the server
+      if (file.size > 10 * 1024 * 1024) { // Example: 10MB client-side warning
+        alert("A imagem é muito grande (máx ~10MB para demonstração). Servidores reais podem ter outros limites.");
+        setNewPhotoFile(null);
+        setNewPhotoPreview(null);
+        e.target.value = ''; 
+        return;
+      }
+      setNewPhotoFile(file); // Store the File object
+      
+      // Generate local preview
       const reader = new FileReader();
+      reader.onloadstart = () => setIsReadingFile(true);
       reader.onloadend = () => {
         setNewPhotoPreview(reader.result as string);
+        setIsReadingFile(false);
       };
+      reader.onerror = () => {
+        console.error("Erro ao ler o arquivo de imagem para pré-visualização.");
+        alert("Ocorreu um erro ao ler o arquivo de imagem para pré-visualização.");
+        setIsReadingFile(false);
+        setNewPhotoFile(null);
+        setNewPhotoPreview(null);
+        e.target.value = '';
+      }
       reader.readAsDataURL(file);
     } else {
       setNewPhotoFile(null);
       setNewPhotoPreview(null);
-      // If editing, and file is cleared, revert preview to original photo's URL
-      if (editingPhoto) {
+      if (editingPhoto) { // If was editing, restore preview from existing photo URL
         setNewPhotoPreview(editingPhoto.url);
       }
     }
@@ -96,45 +146,46 @@ const AdminPanel: React.FC = () => {
     }
   };
 
-  const handleAddPhoto = (e: FormEvent) => {
+  const handleAddPhoto = async (e: FormEvent) => {
     e.preventDefault();
-    if (!newPhotoFile) {
+    if (!newPhotoFile) { // Check for the File object
       alert('Por favor, selecione um arquivo de imagem.');
       return;
     }
-    if (newPhotoPreview) { // newPhotoPreview will hold the base64 string
-        addPhoto({ url: newPhotoPreview, caption: newPhotoCaption });
-        resetPhotoForm();
-    } else {
-        // Fallback if preview didn't load, though file selection implies it should
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            addPhoto({ url: reader.result as string, caption: newPhotoCaption });
-            resetPhotoForm();
-        };
-        if (newPhotoFile) { // Check added to ensure newPhotoFile is not null
-            reader.readAsDataURL(newPhotoFile);
-        }
+    try {
+      await addPhoto(newPhotoFile, newPhotoCaption); // Pass the File object
+      // Alert message updated by addPhoto in context
+      resetPhotoForm();
+    } catch (err) {
+      console.error("Falha ao tentar adicionar foto:", err);
+      // Error already handled by context's setStorageError
     }
   };
 
   const handleEditPhotoClick = (photo: Photo) => {
+    setCurrentSection('photos');
     setEditingPhoto(photo);
     setNewPhotoCaption(photo.caption || '');
-    setNewPhotoPreview(photo.url); // This URL is already base64 or external
-    setNewPhotoFile(null); // Clear file input for new selection if desired
+    setNewPhotoPreview(photo.url); // Set preview from existing URL
+    setNewPhotoFile(null); // Clear any selected file initially
+    const photoFileInput = document.getElementById('photoFile') as HTMLInputElement;
+    if (photoFileInput) photoFileInput.value = '';
+    window.scrollTo(0,0);
   };
   
-  const handleUpdatePhoto = (e: FormEvent) => {
+  const handleUpdatePhoto = async (e: FormEvent) => {
     e.preventDefault();
     if (!editingPhoto) return;
 
-    if (newPhotoFile && newPhotoPreview) { // New file was selected and read
-      updatePhoto(editingPhoto.id, newPhotoPreview, newPhotoCaption);
-    } else { // No new file, just update caption or keep original image
-      updatePhoto(editingPhoto.id, editingPhoto.url, newPhotoCaption);
+    try {
+      // Pass the File object if a new one is selected, or undefined otherwise
+      await updatePhoto(editingPhoto.id, { file: newPhotoFile || undefined, caption: newPhotoCaption });
+      // Alert message updated by updatePhoto in context
+      resetPhotoForm();
+    } catch (err) {
+      console.error("Falha ao tentar atualizar foto:", err);
+      // Error already handled by context's setStorageError
     }
-    resetPhotoForm();
   };
 
 
@@ -144,6 +195,59 @@ const AdminPanel: React.FC = () => {
     alert('Citações salvas!');
   };
 
+  const handleAddOrUpdateLetter = (e: FormEvent) => {
+    e.preventDefault();
+    if (!letterTitle.trim() || !letterContent.trim() || !letterDate.trim()) {
+        alert('Por favor, preencha o título, conteúdo e data da carta.');
+        return;
+    }
+    const letterData = { 
+        title: letterTitle, 
+        content: letterContent, 
+        date: letterDate, 
+        author: letterAuthor.trim() || undefined 
+    };
+
+    if (editingLetter) {
+        updateLoveLetter(editingLetter.id, letterData);
+        alert('Carta atualizada com sucesso!');
+    } else {
+        addLoveLetter(letterData);
+        alert('Carta adicionada com sucesso!');
+    }
+    resetLetterForm();
+  };
+
+  const handleEditLetterClick = (letter: LoveLetter) => {
+    setCurrentSection('loveLetters');
+    setEditingLetter(letter);
+    setLetterTitle(letter.title);
+    setLetterContent(letter.content);
+    setLetterDate(letter.date); 
+    setLetterAuthor(letter.author || '');
+    window.scrollTo(0,0);
+  };
+
+  const handleDeleteLetter = (letterId: string) => {
+    if (confirm('Tem certeza que deseja remover esta carta de amor?')) {
+        removeLoveLetter(letterId);
+        alert('Carta removida.');
+    }
+  };
+  
+  const handleDeletePhoto = async (photoId: string) => {
+    if (confirm('Tem certeza que deseja remover esta foto? Esta ação (simulada) tentaria remover do servidor.')) {
+        try {
+            await removePhoto(photoId);
+            // Alert is handled by removePhoto in context
+        } catch (err) {
+            console.error("Falha ao tentar remover foto:", err);
+             // Error already handled by context's setStorageError
+        }
+    }
+  };
+
+
   const handlePasswordChange = async (e: FormEvent) => {
     e.preventDefault();
     if (newAdminPassword !== confirmNewAdminPassword) {
@@ -151,14 +255,16 @@ const AdminPanel: React.FC = () => {
       return;
     }
     if (newAdminPassword.length < 4) {
-      alert('A senha deve ter pelo menos 4 caracteres.');
+      alert('A senha deve ter pelo menos 4 caracteres.'); // This alert is fine here
       return;
     }
     const success = await changeAdminPassword(newAdminPassword);
     if (success) {
       setNewAdminPassword('');
       setConfirmNewAdminPassword('');
+      // Alert handled by changeAdminPassword
     }
+    // If !success, changeAdminPassword should set storageError
   };
 
   const handleThemeChange = (prop: keyof ThemeColors, value: string) => {
@@ -191,7 +297,7 @@ const AdminPanel: React.FC = () => {
             {error && <p className="text-red-500 text-sm">{error}</p>}
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || isReadingFile}
               className={`w-full p-3 rounded-lg ${theme.primaryButtonBg} ${theme.primaryButtonText} font-semibold transition hover:opacity-90 disabled:opacity-50`}
             >
               {isLoading ? 'Entrando...' : 'Entrar'}
@@ -211,16 +317,19 @@ const AdminPanel: React.FC = () => {
             <h2 className={`text-3xl font-semibold mb-6 ${theme.accent}`}>Bem-vindos, Pombinhos!</h2>
             <p className="mb-6">Este é o seu painel de administração especial. Gerencie o conteúdo e a aparência do seu site por aqui.</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <button onClick={() => setCurrentSection('theme')} className={`p-4 rounded-lg ${theme.secondaryButtonBg} ${theme.secondaryButtonText} text-left hover:shadow-md transition`}>
+                <button onClick={() => setCurrentSection('theme')} className={`p-4 rounded-lg ${theme.secondaryButtonBg} ${theme.secondaryButtonText} text-left hover:shadow-md transition flex items-center`}>
                     <PaintBrushIcon className="inline-block mr-2 w-6 h-6" /> Personalizar Aparência
                 </button>
-                <button onClick={() => setCurrentSection('photos')} className={`p-4 rounded-lg ${theme.secondaryButtonBg} ${theme.secondaryButtonText} text-left hover:shadow-md transition`}>
+                <button onClick={() => setCurrentSection('photos')} className={`p-4 rounded-lg ${theme.secondaryButtonBg} ${theme.secondaryButtonText} text-left hover:shadow-md transition flex items-center`}>
                     <PhotoIcon className="inline-block mr-2 w-6 h-6" /> Gerenciar Galeria de Fotos
                 </button>
-                <button onClick={() => setCurrentSection('quotes')} className={`p-4 rounded-lg ${theme.secondaryButtonBg} ${theme.secondaryButtonText} text-left hover:shadow-md transition`}>
+                <button onClick={() => setCurrentSection('quotes')} className={`p-4 rounded-lg ${theme.secondaryButtonBg} ${theme.secondaryButtonText} text-left hover:shadow-md transition flex items-center`}>
                     <PencilSquareIcon className="inline-block mr-2 w-6 h-6" /> Editar Citações Afetuosas
                 </button>
-                <button onClick={() => setCurrentSection('password')} className={`p-4 rounded-lg ${theme.secondaryButtonBg} ${theme.secondaryButtonText} text-left hover:shadow-md transition`}>
+                <button onClick={() => setCurrentSection('loveLetters')} className={`p-4 rounded-lg ${theme.secondaryButtonBg} ${theme.secondaryButtonText} text-left hover:shadow-md transition flex items-center`}>
+                    <EnvelopeIcon className="inline-block mr-2 w-6 h-6" /> Gerenciar Cartas de Amor
+                </button>
+                <button onClick={() => setCurrentSection('password')} className={`p-4 rounded-lg ${theme.secondaryButtonBg} ${theme.secondaryButtonText} text-left hover:shadow-md transition flex items-center`}>
                     <ArrowPathIcon className="inline-block mr-2 w-6 h-6" /> Alterar Senha do Administrador
                 </button>
             </div>
@@ -255,11 +364,15 @@ const AdminPanel: React.FC = () => {
       case 'photos':
         return (
           <div>
-            <h2 className={`text-2xl font-semibold mb-4 ${theme.accent}`}>{editingPhoto ? 'Editar Foto' : 'Adicionar Nova Foto'}</h2>
+            <h2 className={`text-2xl font-semibold mb-4 ${theme.accent}`}>{editingPhoto ? 'Editar Foto' : 'Adicionar Nova Foto (Simulado)'}</h2>
+             <p className={`${theme.text} text-sm mb-4 p-3 ${theme.cardBg} border ${theme.borderColor} rounded-md`}>
+                <ExclamationTriangleIcon className="inline w-5 h-5 mr-2 text-yellow-500" />
+                <strong>Nota:</strong> O upload de fotos agora está preparado para um backend. As fotos adicionadas aqui aparecerão <strong>apenas localmente e temporariamente</strong> para demonstração. Elas não serão salvas permanentemente sem um servidor e banco de dados SQL.
+            </p>
             <form onSubmit={editingPhoto ? handleUpdatePhoto : handleAddPhoto} className={`mb-6 p-6 border ${theme.borderColor} rounded-lg shadow-md space-y-4 ${theme.cardBg}`}>
               <div>
                 <label htmlFor="photoFile" className={`block text-sm font-medium ${theme.text} mb-1`}>
-                  Selecionar Imagem
+                  Selecionar Imagem (arquivo será enviado ao servidor)
                 </label>
                 <input
                   type="file"
@@ -270,10 +383,11 @@ const AdminPanel: React.FC = () => {
                 />
               </div>
 
-              {newPhotoPreview && (
+              {(newPhotoPreview || isReadingFile) && (
                 <div className="my-2">
-                  <p className={`text-sm ${theme.text} mb-1`}>Pré-visualização:</p>
-                  <img src={newPhotoPreview} alt="Pré-visualização da foto" className="max-w-xs max-h-48 rounded-md border object-contain shadow-sm"/>
+                  <p className={`text-sm ${theme.text} mb-1`}>Pré-visualização Local:</p>
+                  {isReadingFile && <p className={`${theme.text} italic`}>Carregando pré-visualização...</p>}
+                  {newPhotoPreview && !isReadingFile && <img src={newPhotoPreview} alt="Pré-visualização da foto" className="max-w-xs max-h-48 rounded-md border object-contain shadow-sm"/>}
                 </div>
               )}
               
@@ -292,9 +406,9 @@ const AdminPanel: React.FC = () => {
               </div>
               
               <div className="flex space-x-3">
-                <button type="submit" className={`py-2 px-5 rounded ${theme.primaryButtonBg} ${theme.primaryButtonText} transition flex items-center justify-center disabled:opacity-60`} disabled={isLoading || (!newPhotoFile && !editingPhoto)}>
+                <button type="submit" className={`py-2 px-5 rounded ${theme.primaryButtonBg} ${theme.primaryButtonText} transition flex items-center justify-center disabled:opacity-60`} disabled={isLoading || isReadingFile || (editingPhoto === null && !newPhotoFile) }>
                   <ArrowUpTrayIcon className="w-5 h-5 mr-2"/>
-                  {editingPhoto ? 'Atualizar Foto' : 'Adicionar Foto'}
+                  {editingPhoto ? 'Atualizar Foto (Simulado)' : 'Adicionar Foto (Simulado)'}
                 </button>
                 {editingPhoto && (
                   <button type="button" onClick={resetPhotoForm} className={`py-2 px-4 rounded ${theme.secondaryButtonBg} ${theme.secondaryButtonText} transition`}>
@@ -304,9 +418,9 @@ const AdminPanel: React.FC = () => {
               </div>
             </form>
 
-            <h3 className={`text-xl font-semibold mt-8 mb-4 ${theme.accent}`}>Fotos Adicionadas</h3>
+            <h3 className={`text-xl font-semibold mt-8 mb-4 ${theme.accent}`}>Fotos Adicionadas (Em memória)</h3>
             {content.photos.length === 0 ? (
-                <p className={`${theme.text}`}>Nenhuma foto adicionada ainda.</p>
+                <p className={`${theme.text}`}>Nenhuma foto adicionada ainda ou carregada do backend (simulado).</p>
             ) : (
                 <div className="space-y-3">
                 {content.photos.map(photo => (
@@ -315,9 +429,9 @@ const AdminPanel: React.FC = () => {
                     <span className={`flex-grow truncate ${theme.text}`} title={photo.caption || photo.id}>{photo.caption || 'Sem legenda'}</span>
                     <div className="flex-shrink-0 space-x-2">
                         <button onClick={() => handleEditPhotoClick(photo)} className={`p-2 rounded-md ${theme.secondaryButtonBg} ${theme.secondaryButtonText} hover:opacity-80`} aria-label="Editar foto">
-                            <PencilSquareIcon className="w-5 h-5"/>
+                            <PencilIcon className="w-5 h-5"/>
                         </button>
-                        <button onClick={() => {if(confirm('Tem certeza que deseja remover esta foto?')) removePhoto(photo.id)}} className={`p-2 rounded-md ${theme.secondaryButtonBg} text-red-500 hover:bg-red-100 hover:text-red-700`} aria-label="Remover foto">
+                        <button onClick={() => handleDeletePhoto(photo.id)} className={`p-2 rounded-md ${theme.secondaryButtonBg} text-red-500 hover:bg-red-100 hover:text-red-700`} aria-label="Remover foto">
                             <TrashIcon className="w-5 h-5"/>
                         </button>
                     </div>
@@ -356,6 +470,98 @@ const AdminPanel: React.FC = () => {
             </div>
           </div>
         );
+      case 'loveLetters':
+        return (
+          <div>
+            <h2 className={`text-2xl font-semibold mb-4 ${theme.accent}`}>{editingLetter ? 'Editar Carta de Amor' : 'Adicionar Nova Carta de Amor'}</h2>
+            <form onSubmit={handleAddOrUpdateLetter} className={`mb-6 p-6 border ${theme.borderColor} rounded-lg shadow-md space-y-4 ${theme.cardBg}`}>
+              <div>
+                <label htmlFor="letterTitle" className={`block text-sm font-medium ${theme.text} mb-1`}>Título da Carta</label>
+                <input
+                  type="text"
+                  id="letterTitle"
+                  value={letterTitle}
+                  onChange={(e) => setLetterTitle(e.target.value)}
+                  placeholder="Ex: Para Meu Amor Eterno"
+                  className={`w-full p-2 border ${theme.borderColor} rounded-md ${theme.cardBg} focus:ring-1 ${theme.accent.replace('text-', 'ring-')} ${theme.text}`}
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="letterContent" className={`block text-sm font-medium ${theme.text} mb-1`}>Conteúdo da Carta</label>
+                <textarea
+                  id="letterContent"
+                  value={letterContent}
+                  onChange={(e) => setLetterContent(e.target.value)}
+                  rows={8}
+                  placeholder="Escreva seus sentimentos aqui..."
+                  className={`w-full p-2 border ${theme.borderColor} rounded-md ${theme.cardBg} focus:ring-1 ${theme.accent.replace('text-', 'ring-')} ${theme.text}`}
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="letterDate" className={`block text-sm font-medium ${theme.text} mb-1`}>Data</label>
+                  <input
+                    type="date"
+                    id="letterDate"
+                    value={letterDate}
+                    onChange={(e) => setLetterDate(e.target.value)}
+                    className={`w-full p-2 border ${theme.borderColor} rounded-md ${theme.cardBg} focus:ring-1 ${theme.accent.replace('text-', 'ring-')} ${theme.text}`}
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="letterAuthor" className={`block text-sm font-medium ${theme.text} mb-1`}>Autor/Assinatura (Opcional)</label>
+                  <input
+                    type="text"
+                    id="letterAuthor"
+                    value={letterAuthor}
+                    onChange={(e) => setLetterAuthor(e.target.value)}
+                    placeholder="Ex: Com todo meu amor, [Seu Nome]"
+                    className={`w-full p-2 border ${theme.borderColor} rounded-md ${theme.cardBg} focus:ring-1 ${theme.accent.replace('text-', 'ring-')} ${theme.text}`}
+                  />
+                </div>
+              </div>
+              <div className="flex space-x-3">
+                <button type="submit" className={`py-2 px-5 rounded ${theme.primaryButtonBg} ${theme.primaryButtonText} transition flex items-center justify-center disabled:opacity-60`} disabled={isLoading || isReadingFile}>
+                   {editingLetter ? <PencilIcon className="w-5 h-5 mr-2"/> : <PlusCircleIcon className="w-5 h-5 mr-2"/>}
+                  {editingLetter ? 'Atualizar Carta' : 'Adicionar Carta'}
+                </button>
+                {editingLetter && (
+                  <button type="button" onClick={resetLetterForm} className={`py-2 px-4 rounded ${theme.secondaryButtonBg} ${theme.secondaryButtonText} transition`}>
+                    Cancelar Edição
+                  </button>
+                )}
+              </div>
+            </form>
+
+            <h3 className={`text-xl font-semibold mt-8 mb-4 ${theme.accent}`}>Cartas Adicionadas</h3>
+            {content.loveLetters.length === 0 ? (
+              <p className={`${theme.text}`}>Nenhuma carta de amor adicionada ainda.</p>
+            ) : (
+              <div className="space-y-3">
+                {content.loveLetters.slice().reverse().map(letter => ( 
+                  <div key={letter.id} className={`flex items-center justify-between p-3 border ${theme.borderColor} rounded-lg ${theme.cardBg} shadow-sm`}>
+                    <div className="flex-grow overflow-hidden">
+                        <h4 className={`font-semibold ${theme.accent}`}>{letter.title}</h4>
+                        <p className={`text-xs opacity-70 ${theme.text}`}>{new Date(letter.date + 'T00:00:00').toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' })} {letter.author && ` - ${letter.author}`}</p>
+                        <p className={`text-sm mt-1 truncate ${theme.text}`} title={letter.content}>{letter.content}</p>
+                    </div>
+                    <div className="flex-shrink-0 space-x-2 ml-4">
+                      <button onClick={() => handleEditLetterClick(letter)} className={`p-2 rounded-md ${theme.secondaryButtonBg} ${theme.secondaryButtonText} hover:opacity-80`} aria-label="Editar carta">
+                        <PencilIcon className="w-5 h-5"/>
+                      </button>
+                      <button onClick={() => handleDeleteLetter(letter.id)} className={`p-2 rounded-md ${theme.secondaryButtonBg} text-red-500 hover:bg-red-100 hover:text-red-700`} aria-label="Remover carta">
+                        <TrashIcon className="w-5 h-5"/>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
       case 'password':
         return (
           <div>
@@ -381,7 +587,7 @@ const AdminPanel: React.FC = () => {
                   className={`w-full p-2 border ${theme.borderColor} rounded-md ${theme.cardBg} focus:ring-1 ${theme.accent.replace('text-', 'ring-')}`}
                 />
               </div>
-              <button type="submit" disabled={isLoading} className={`py-2 px-4 rounded ${theme.primaryButtonBg} ${theme.primaryButtonText} transition disabled:opacity-50`}>
+              <button type="submit" disabled={isLoading || isReadingFile} className={`py-2 px-4 rounded ${theme.primaryButtonBg} ${theme.primaryButtonText} transition disabled:opacity-50`}>
                 {isLoading ? 'Alterando...' : 'Alterar Senha'}
               </button>
             </form>
@@ -397,10 +603,11 @@ const AdminPanel: React.FC = () => {
     section: AdminSection;
     icon: React.ReactElement<{ className?: string }>; 
   }[] = [
-    {label: "Painel", section: "dashboard", icon: <PhotoIcon />}, // Using PhotoIcon as a generic dashboard icon
+    {label: "Painel", section: "dashboard", icon: <PhotoIcon />}, 
     {label: "Aparência", section: "theme", icon: <PaintBrushIcon />},
     {label: "Fotos", section: "photos", icon: <PhotoIcon />},
     {label: "Citações", section: "quotes", icon: <PencilSquareIcon />},
+    {label: "Cartas de Amor", section: "loveLetters", icon: <EnvelopeIcon />},
     {label: "Senha", section: "password", icon: <ArrowPathIcon />},
   ];
 
@@ -437,7 +644,28 @@ const AdminPanel: React.FC = () => {
           Sair
         </button>
       </nav>
-      <main className="flex-1 p-8 overflow-y-auto">
+      <main className="flex-1 p-8 overflow-y-auto" style={{ maxHeight: '100vh' }}>
+         {storageError && (
+          <div className={`p-4 mb-6 text-sm text-red-700 bg-red-100 border-l-4 border-red-500 rounded-md shadow-md flex justify-between items-start`} role="alert">
+            <div className="flex items-start">
+              <ExclamationTriangleIcon className="h-5 w-5 text-red-500 mr-3 mt-0.5" />
+              <div>
+                <p className="font-bold">Alerta de Sistema ou Armazenamento:</p>
+                <p className="text-sm">{storageError}</p>
+              </div>
+            </div>
+            <button 
+              onClick={clearStorageError} 
+              className={`ml-auto -mx-1.5 -my-1.5 bg-red-100 text-red-500 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-200 inline-flex h-8 w-8 items-center justify-center`}
+              aria-label="Fechar"
+            >
+              <span className="sr-only">Fechar</span>
+              <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+              </svg>
+            </button>
+          </div>
+        )}
         {renderSection()}
       </main>
     </div>
